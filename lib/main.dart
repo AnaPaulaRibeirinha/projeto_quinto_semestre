@@ -18,7 +18,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+<<<<<<< Updated upstream
         
+=======
+>>>>>>> Stashed changes
       ),
       // home: const MyHomePage(),
       debugShowCheckedModeBanner: false,
