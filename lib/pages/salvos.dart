@@ -55,8 +55,35 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Salvos'),
       ),
-      body: const Center(
-        child: Text('Conteúdo da Salvos'),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Produtos Salvos',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                _buildProductCard(
+                  'Rímel',
+                  'https://i.imgur.com/qAMdoeP.png',
+                ),
+                _buildProductCard(
+                  'Batom',
+                  'https://i.imgur.com/KoReX3t.png',
+                ),
+                _buildProductCard(
+                  'Gloss',
+                  'https://i.imgur.com/a/ZQtlfb7.png',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -65,7 +92,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Início',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.heart_broken),
+            icon: Icon(Icons.favorite),
             label: 'Salvos',
           ),
           BottomNavigationBarItem(
@@ -77,6 +104,39 @@ class _HomePageState extends State<HomePage> {
         selectedItemColor: bottomNavBarColor,
         onTap: _onItemTapped,
         // Add your onTap functionality for bottom navigation items
+      ),
+    );
+  }
+
+  Widget _buildProductCard(String name, String imageUrl) {
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.network(
+            imageUrl,
+            height: 100,
+            width: 150,
+            fit: BoxFit.cover,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              name,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Ação ao clicar no botão
+              },
+              child: const Text('Comprar'),
+            ),
+          ),
+        ],
       ),
     );
   }

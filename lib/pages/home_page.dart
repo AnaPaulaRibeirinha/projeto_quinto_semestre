@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Início',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.heart_broken),
+            icon: Icon(Icons.favorite),
             label: 'Salvos',
           ),
           BottomNavigationBarItem(

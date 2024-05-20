@@ -16,12 +16,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Inicial',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 139, 13, 30)),
         useMaterial3: true,
-<<<<<<< Updated upstream
-        
-=======
->>>>>>> Stashed changes
       ),
       // home: const MyHomePage(),
       debugShowCheckedModeBanner: false,
