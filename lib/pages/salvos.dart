@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const salvos());
+  runApp(const Salvos());
 }
 
-class salvos extends StatelessWidget {
-  const salvos({super.key});
+class Salvos extends StatelessWidget {
+  const Salvos({super.key});
 
   @override
   Widget build(BuildContext context) {

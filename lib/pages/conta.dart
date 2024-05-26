@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const salvos(),
+            builder: (context) => const Salvos(),
           ),
         );
         break;
