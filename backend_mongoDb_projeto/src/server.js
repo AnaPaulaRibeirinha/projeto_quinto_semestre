@@ -20,34 +20,6 @@ mongoose.connect('mongodb://192.168.0.69:27017/tons_de_beleza', {
   console.error('Erro de conexão com o MongoDB', err);
 });
 
-// Definindo um modelo de exemplo
-// const ItemSchema = new mongoose.Schema({
-//   name: String,
-//   description: String
-// });
-
-// const Item = mongoose.model('Item', ItemSchema);
-
-// Rota para obter todos os itens
-// app.get('/items', async (req, res) => {
-//   try {
-//     const items = await Item.find();
-//     res.json(items);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
-
-// Rota para adicionar um novo item
-// app.post('/items', async (req, res) => {
-//   const newItem = new Item(req.body);
-//   try {
-//     const savedItem = await newItem.save();
-//     res.status(201).json(savedItem);
-//   } catch (err) {
-//     res.status(400).send(err);
-//   }
-// });
 
 // Definindo o modelo de usuário
 const UsuarioSchema = new mongoose.Schema({
@@ -86,6 +58,23 @@ const UsuarioSchema = new mongoose.Schema({
       res.status(400).send(err);
     }
   });
+
+  // Rota para login
+app.post('/cadastro', async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ email, senha });
+
+    if (!usuario) {
+      return res.status(401).json({ message: 'Email ou senha incorretos' });
+    }
+
+    res.status(200).json({ message: 'Login realizado com sucesso', usuario });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao efetuar login', error: err });
+  }
+});
 
 // Iniciar o servidor
 app.listen(port, () => {

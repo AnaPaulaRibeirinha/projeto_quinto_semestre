@@ -32,7 +32,7 @@ class _CadastroPageState extends State<CadastroPage> {
         };
         _apiService.addUsuario(usuario).then((response) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Usuário cadastrado com sucesso!')),
+            const SnackBar(content: Text('Usuário cadastrado com sucesso!')),
           );
         }).catchError((error) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -41,6 +41,19 @@ class _CadastroPageState extends State<CadastroPage> {
         });
       } else {
         // Lógica de login
+        Map<String, dynamic> credentials = {
+          'email': _emailController.text,
+          'senha': _senhaController.text,
+        };
+        _apiService.login(credentials).then((response) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login realizado com sucesso!')),
+          );
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro ao efetuar login: $error')),
+          );
+        });
       }
     }
   }
@@ -103,11 +116,13 @@ class _CadastroPageState extends State<CadastroPage> {
                       child: Text(value),
                     );
                   }).toList(),
-                  onChanged: !_isLogin ? (String? value) {
-                    setState(() {
-                      _genero = value!;
-                    });
-                  } : null,
+                  onChanged: !_isLogin
+                      ? (String? value) {
+                          setState(() {
+                            _genero = value!;
+                          });
+                        }
+                      : null,
                 ),
               const SizedBox(height: 20.0),
               TextFormField(
