@@ -1,79 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/pages/cadastro.dart';
-import 'package:projeto_quinto_semestre/pages/home_page.dart';
-import 'package:projeto_quinto_semestre/pages/salvos.dart';
 
-void main() {
-  runApp(const Conta());
-}
+class Conta extends StatefulWidget {
+  const Conta({super.key, required this.userInfo});
 
-class Conta extends StatelessWidget {
-  const Conta({super.key});
+  final Map<String, dynamic> userInfo;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Conta',
-      theme: ThemeData(
-        // Defina as cores da AppBar e do BottomNavigationBar
-        appBarTheme: AppBarTheme(
-          backgroundColor: appBarColor,
-        ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          selectedItemColor: bottomNavBarColor,
-        ),
-      ),
-      home: const HomePage(),
-    );
+  _ContaState createState() => _ContaState();
+}
+
+class _ContaState extends State<Conta> {
+  final ApiService _apiService = ApiService();
+
+  late Map<String, dynamic> _userInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _userInfo = widget.userInfo;
+    _checkLoginStatus();
   }
-}
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-Color appBarColor = Colors.white;
-Color bottomNavBarColor = const Color(0xFF770624);
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Navegar para a página correspondente ao item selecionado
-    switch (_selectedIndex) {
-      case 0:
-        // Navegar para a página de "Início"
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MyHomePage(),
-          ),
-        );
-        break;
-      case 1:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Salvos(),
-          ),
-        );
-        break;
-      case 2:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Conta(),
-          ),
-        );
-        break;
-    }
+  Future<void> _checkLoginStatus() async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const CadastroPage()),
+    );
   }
 
   @override
@@ -82,21 +36,61 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Conta'),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Faça o cadastro clicando no botão'),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                // Navegue para a página de cadastro
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CadastroPage()),
-                );
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              color: Colors.grey[200],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(_userInfo['avatarUrl'] ?? ''),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    '${_userInfo['nome'] ?? ''} ${_userInfo['sobrenome'] ?? ''}',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    _userInfo['email'] ?? '',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Configurações'),
+              onTap: () {
+                // Navegar para a tela de configurações
               },
-              child: const Text('Cadastrar'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.payment),
+              title: const Text('Formas de pagamento'),
+              onTap: () {
+                // Navegar para a tela de formas de pagamento
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.favorite),
+              title: const Text('Favoritos'),
+              onTap: () {
+                // Navegar para a tela de favoritos
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Sair'),
+              onTap: () {
+                // Implementar a lógica de logout
+              },
             ),
           ],
         ),
@@ -116,10 +110,25 @@ class _HomePageState extends State<HomePage> {
             label: 'Conta',
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: bottomNavBarColor,
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    // Navegue para a página correspondente ao item selecionado
+    switch (index) {
+      case 0:
+        // Navegar para a página de "Início"
+        Navigator.pushReplacementNamed(context, '/');
+        break;
+      case 1:
+        // Navegar para a página de "Salvos"
+        Navigator.pushReplacementNamed(context, '/salvos');
+        break;
+      case 2:
+        // Nenhuma ação necessária, já estamos na página de Conta
+        break;
+    }
   }
 }

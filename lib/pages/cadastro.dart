@@ -49,6 +49,23 @@ class _CadastroPageState extends State<CadastroPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Login realizado com sucesso!')),
           );
+
+          // Após o login bem-sucedido, obtenha os dados do usuário
+          _apiService.getUserInfo(credentials).then((userInfo) {
+            // Redirecione para a página de Conta com os dados do usuário
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(
+            //       builder: (context) => Conta(userInfo: userInfo ?? {})),
+            // );
+          }).catchError((error) {
+            // Lidar com erros ao obter informações do usuário
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content:
+                      Text('Erro ao obter informações do usuário: $error')),
+            );
+          });
         }).catchError((error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Erro ao efetuar login: $error')),

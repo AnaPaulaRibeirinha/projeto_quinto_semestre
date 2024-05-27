@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -20,14 +24,12 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedIndex = index;
     });
 
-    // Navegar para a página correspondente ao item selecionado
     switch (_selectedIndex) {
       case 0:
-        // Navegar para a página de "Início"
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const MyHomePage(),
+            builder: (context) => Home(),
           ),
         );
         break;
@@ -35,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const Salvos(),
+            builder: (context) => Salvos(),
           ),
         );
         break;
@@ -43,7 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const Conta(),
+            builder: (context) => Conta(
+              userInfo: {},
+            ),
           ),
         );
         break;
@@ -52,6 +56,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> products = [
+      {
+        'image': 'https://i.imgur.com/qAMdoeP.png',
+        'price': 'R\$ 30,00',
+        'description': 'Rímel'
+      },
+      {
+        'image': 'https://i.imgur.com/KoReX3t.png',
+        'price': 'R\$ 50,00',
+        'description': 'Batom'
+      },
+      {
+        'image': 'https://i.imgur.com/huG12VB.png',
+        'price': 'R\$ 100,00',
+        'description': 'Paleta'
+      },
+      {
+        'image': 'https://i.imgur.com/KoReX3t.png',
+        'price': 'R\$ 50',
+        'description': 'Batom'
+      },
+    ];
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
@@ -65,10 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2), // Cor da sombra
-                spreadRadius: 1, // Espalhamento da sombra
-                blurRadius: 2, // Desfoque da sombra
-                offset: const Offset(0, 2), // Deslocamento da sombra
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 2,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -96,22 +123,118 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      body: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 16), // Espaçamento entre a AppBar e o texto "Início"
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'INÍCIO',
-              style: TextStyle(
-                fontSize: 50,
-                fontFamily: 'Kanit',
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 16),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'INÍCIO',
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontFamily: 'Kanit',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+            SizedBox(height: 16),
+            Container(
+              height: 200,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: 480,
+                    child: Image.network(
+                      'https://i.imgur.com/nc5dc1N.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Container(
+                    width: 480,
+                    child: Image.network(
+                      'https://i.imgur.com/39rOr9o.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Container(
+                    width: 480,
+                    child: Image.network(
+                      'https://i.imgur.com/8H1kicp.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Produtos',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontFamily: 'Kanit',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            GridView.builder(
+              itemCount: products.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+              ),
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  margin: EdgeInsets.all(8),
+                  color: Colors.grey[100],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Image.network(
+                          products[index]['image']!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          products[index]['description']!,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Lógica para comprar o produto
+                        },
+                        child: Text('Comprar'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: bottomNavBarColor,
+                          textStyle: TextStyle(
+                              color: Colors
+                                  .white), // Definindo a cor do texto como branco
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -131,7 +254,6 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         selectedItemColor: bottomNavBarColor,
         onTap: _onItemTapped,
-        // Add your onTap functionality for bottom navigation items
       ),
     );
   }

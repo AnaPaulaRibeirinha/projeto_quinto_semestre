@@ -3,12 +3,14 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middlewares
 app.use(bodyParser.json());
 app.use(cors());
+
 
 // Conexão com o MongoDB
 mongoose.connect('mongodb://192.168.0.69:27017/tons_de_beleza', {
@@ -60,7 +62,7 @@ const UsuarioSchema = new mongoose.Schema({
   });
 
   // Rota para login
-app.post('/cadastro', async (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, senha } = req.body;
 
   try {
@@ -75,6 +77,17 @@ app.post('/cadastro', async (req, res) => {
     res.status(500).json({ message: 'Erro ao efetuar login', error: err });
   }
 });
+
+app.post('/recuperaUsuario', async (req, res) => {
+  const { email, senha } = req.body;
+  const usuario = await Usuario.findOne({ email, senha });
+  if (usuario) {
+    res.status(200).json(usuario);
+  } else {
+    res.status(404).json({ error: 'Usuário não encontrado ou senha incorreta' });
+  }
+});
+
 
 // Iniciar o servidor
 app.listen(port, () => {

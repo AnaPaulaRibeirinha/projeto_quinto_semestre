@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const MyHomePage(),
         '/cadastro': (context) => const CadastroPage(),
-        '/conta': (context) => const Conta(),
+         '/conta': (context) => Conta(userInfo: {},), 
         '/home': (context) => const MyHomePage(),
         '/salvos': (context) => const Salvos(),
       },

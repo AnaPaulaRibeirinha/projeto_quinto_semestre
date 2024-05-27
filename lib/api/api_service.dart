@@ -20,13 +20,31 @@ class ApiService {
 
   Future<void> login(Map<String, dynamic> credentials) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/cadastro'),
+      Uri.parse('$baseUrl/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(credentials),
     );
 
     if (response.statusCode != 200) {
       throw Exception('Erro ao efetuar login');
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserInfo(
+      Map<String, dynamic> credentials) async {
+    final String email = credentials['email'];
+    final String senha = credentials['senha'];
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/recuperaUsuario'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'senha': senha}),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Erro ao obter dados cliente: ${response.statusCode}');
     }
   }
 }
