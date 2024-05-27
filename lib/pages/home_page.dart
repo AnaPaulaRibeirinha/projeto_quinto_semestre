@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 
@@ -126,11 +127,12 @@ class _MyHomePageState extends State<MyHomePage> {
               IconButton(
                 icon: Icon(Icons.shopping_cart, color: bottomNavBarColor),
                 onPressed: () {
-                   Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Carrinho(),
-          ),);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Carrinho(),
+                    ),
+                  );
                 },
               ),
               IconButton(

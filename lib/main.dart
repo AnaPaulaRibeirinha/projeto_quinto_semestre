@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/pages/cadastro.dart';
+import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/home_page.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
