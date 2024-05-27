@@ -3,11 +3,23 @@ import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+    );
+  }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -29,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Home(),
+            builder: (context) => const Home(),
           ),
         );
         break;
@@ -37,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Salvos(),
+            builder: (context) => const Salvos(),
           ),
         );
         break;
@@ -45,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Conta(
+            builder: (context) => const Conta(
               userInfo: {},
             ),
           ),
@@ -113,7 +125,13 @@ class _MyHomePageState extends State<MyHomePage> {
             actions: [
               IconButton(
                 icon: Icon(Icons.shopping_cart, color: bottomNavBarColor),
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Carrinho(),
+          ),);
+                },
               ),
               IconButton(
                 icon: Icon(Icons.search, color: bottomNavBarColor),
@@ -127,8 +145,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 16),
-            Center(
+            const SizedBox(height: 16),
+            const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
@@ -141,30 +159,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Container(
+            const SizedBox(height: 16),
+            SizedBox(
               height: 200,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    width: 480,
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 3 - 24,
                     child: Image.network(
                       'https://i.imgur.com/nc5dc1N.png',
                       fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(width: 16),
-                  Container(
-                    width: 480,
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 3 - 24,
                     child: Image.network(
                       'https://i.imgur.com/39rOr9o.png',
                       fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(width: 16),
-                  Container(
-                    width: 480,
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 3 - 24,
                     child: Image.network(
                       'https://i.imgur.com/8H1kicp.png',
                       fit: BoxFit.cover,
@@ -173,8 +191,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            SizedBox(height: 16),
-            Padding(
+            const SizedBox(height: 16),
+            const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'Produtos',
@@ -187,14 +205,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             GridView.builder(
               itemCount: products.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
               ),
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
                 return Container(
-                  margin: EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   color: Colors.grey[100],
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -210,23 +228,21 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Text(
                           products[index]['description']!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          // Lógica para comprar o produto
-                        },
-                        child: Text('Comprar'),
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: bottomNavBarColor,
-                          textStyle: TextStyle(
+                          textStyle: const TextStyle(
                               color: Colors
                                   .white), // Definindo a cor do texto como branco
                         ),
+                        child: const Text('Comprar'),
                       ),
                     ],
                   ),
