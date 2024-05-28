@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
+import 'package:projeto_quinto_semestre/pages/login.dart'; // Importa a página de login
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -9,7 +10,6 @@ class CadastroPage extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroPage> {
-  bool _isLogin = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _sobrenomeController = TextEditingController();
@@ -21,57 +21,28 @@ class _CadastroPageState extends State<CadastroPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      if (!_isLogin) {
-        // Lógica de cadastro
-        Map<String, dynamic> usuario = {
-          'nome': _nomeController.text,
-          'sobrenome': _sobrenomeController.text,
-          'email': _emailController.text,
-          'genero': _genero,
-          'senha': _senhaController.text,
-        };
-        _apiService.addUsuario(usuario).then((response) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Usuário cadastrado com sucesso!')),
-          );
-        }).catchError((error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro ao cadastrar usuário: $error')),
-          );
-        });
-      } else {
-        // Lógica de login
-        Map<String, dynamic> credentials = {
-          'email': _emailController.text,
-          'senha': _senhaController.text,
-        };
-        _apiService.login(credentials).then((response) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login realizado com sucesso!')),
-          );
-
-          // Após o login bem-sucedido, obtenha os dados do usuário
-          _apiService.getUserInfo(credentials).then((userInfo) {
-            // Redirecione para a página de Conta com os dados do usuário
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(
-            //       builder: (context) => Conta(userInfo: userInfo ?? {})),
-            // );
-          }).catchError((error) {
-            // Lidar com erros ao obter informações do usuário
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content:
-                      Text('Erro ao obter informações do usuário: $error')),
-            );
-          });
-        }).catchError((error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro ao efetuar login: $error')),
-          );
-        });
-      }
+      // Lógica de cadastro
+      Map<String, dynamic> usuario = {
+        'nome': _nomeController.text,
+        'sobrenome': _sobrenomeController.text,
+        'email': _emailController.text,
+        'genero': _genero,
+        'senha': _senhaController.text,
+      };
+      _apiService.addUsuario(usuario).then((response) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Usuário cadastrado com sucesso!')),
+        );
+        // Redirecionar para a página de login após cadastro
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao cadastrar usuário: $error')),
+        );
+      });
     }
   }
 
@@ -79,9 +50,9 @@ class _CadastroPageState extends State<CadastroPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _isLogin ? 'Login' : 'Cadastro',
-          style: const TextStyle(color: Colors.white),
+        title: const Text(
+          'Cadastro',
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromARGB(255, 102, 0, 0),
       ),
@@ -99,48 +70,43 @@ class _CadastroPageState extends State<CadastroPage> {
                 ),
               ),
               const SizedBox(height: 20.0),
-              if (!_isLogin) ...[
-                TextFormField(
-                  controller: _nomeController,
-                  decoration: const InputDecoration(labelText: 'Nome'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira seu nome';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20.0),
-                TextFormField(
-                  controller: _sobrenomeController,
-                  decoration: const InputDecoration(labelText: 'Sobrenome'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira seu sobrenome';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20.0),
-              ],
-              if (!_isLogin)
-                DropdownButtonFormField<String>(
-                  value: _genero,
-                  decoration: const InputDecoration(labelText: 'Gênero'),
-                  items: ['Masculino', 'Feminino', 'Outro'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: !_isLogin
-                      ? (String? value) {
-                          setState(() {
-                            _genero = value!;
-                          });
-                        }
-                      : null,
-                ),
+              TextFormField(
+                controller: _nomeController,
+                decoration: const InputDecoration(labelText: 'Nome'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, insira seu nome';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20.0),
+              TextFormField(
+                controller: _sobrenomeController,
+                decoration: const InputDecoration(labelText: 'Sobrenome'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, insira seu sobrenome';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20.0),
+              DropdownButtonFormField<String>(
+                value: _genero,
+                decoration: const InputDecoration(labelText: 'Gênero'),
+                items: ['Masculino', 'Feminino', 'Outro'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    _genero = value!;
+                  });
+                },
+              ),
               const SizedBox(height: 20.0),
               TextFormField(
                 controller: _emailController,
@@ -168,7 +134,7 @@ class _CadastroPageState extends State<CadastroPage> {
               const SizedBox(height: 20.0),
               SizedBox(
                 height: 40.0,
-                width: 150.0, // Define a largura do botão como 150.0
+                width: 150.0,
                 child: ElevatedButton(
                   onPressed: _submitForm,
                   style: ButtonStyle(
@@ -178,24 +144,23 @@ class _CadastroPageState extends State<CadastroPage> {
                         const EdgeInsets.symmetric(
                             vertical: 5.0, horizontal: 20.0)),
                   ),
-                  child: Text(
-                    _isLogin ? 'Login' : 'Cadastrar',
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  child: const Text(
+                    'Cadastrar',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),
               const SizedBox(height: 20.0),
               TextButton(
                 onPressed: () {
-                  setState(() {
-                    _isLogin = !_isLogin;
-                  });
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
                 },
-                child: Text(
-                  _isLogin
-                      ? 'Ainda não tem cadastro? Cadastre-se aqui!'
-                      : 'Já tem cadastro? Faça seu login!',
-                  style: const TextStyle(color: Color.fromARGB(255, 102, 0, 0)),
+                child: const Text(
+                  'Já tem cadastro? Faça seu login!',
+                  style: TextStyle(color: Color.fromARGB(255, 102, 0, 0)),
                 ),
               ),
             ],

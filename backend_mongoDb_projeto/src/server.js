@@ -13,7 +13,7 @@ app.use(cors());
 
 
 // Conexão com o MongoDB
-mongoose.connect('mongodb://192.168.0.69:27017/tons_de_beleza', {
+mongoose.connect('mongodb://127.0.0.1:27017/tons_de_beleza', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {

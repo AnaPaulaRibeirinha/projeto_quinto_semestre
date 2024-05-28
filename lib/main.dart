@@ -3,6 +3,7 @@ import 'package:projeto_quinto_semestre/pages/cadastro.dart';
 import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/home_page.dart';
+import 'package:projeto_quinto_semestre/pages/login.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 //import 'package:projeto_quinto_semestre/dbHelper/connection.dart';
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const MyHomePage(),
         '/salvos': (context) => const Salvos(),
         '/carrinho': (context) => const Carrinho(),
+        '/login': (context) => const LoginPage(),
       },
     );
   }
