@@ -33,7 +33,6 @@ class MyApp extends StatelessWidget {
         '/conta': (context) => const Conta(
               userInfo: {},
             ),
-        '/home': (context) => const MyHomePage(),
         '/salvos': (context) => const Salvos(),
         '/carrinho': (context) => const Carrinho(),
         '/login': (context) => const LoginPage(),
