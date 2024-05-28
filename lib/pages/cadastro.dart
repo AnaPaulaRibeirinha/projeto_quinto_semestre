@@ -33,17 +33,19 @@ class _CadastroPageState extends State<CadastroPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Usuário cadastrado com sucesso!')),
         );
-        // Redirecionar para a página de login após cadastro
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao cadastrar usuário: $error')),
         );
       });
     }
+  }
+
+  void _navigateToLogin(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
   }
 
   @override
@@ -134,7 +136,7 @@ class _CadastroPageState extends State<CadastroPage> {
               const SizedBox(height: 20.0),
               SizedBox(
                 height: 40.0,
-                width: 150.0,
+                width: 150.0, // Define a largura do botão como 150.0
                 child: ElevatedButton(
                   onPressed: _submitForm,
                   style: ButtonStyle(
@@ -152,12 +154,7 @@ class _CadastroPageState extends State<CadastroPage> {
               ),
               const SizedBox(height: 20.0),
               TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
+                onPressed: () => _navigateToLogin(context),
                 child: const Text(
                   'Já tem cadastro? Faça seu login!',
                   style: TextStyle(color: Color.fromARGB(255, 102, 0, 0)),

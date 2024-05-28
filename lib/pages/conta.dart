@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart'; // Import this package
 import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/pages/cadastro.dart';
 
@@ -24,10 +25,13 @@ class _ContaState extends State<Conta> {
   }
 
   Future<void> _checkLoginStatus() async {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const CadastroPage()),
-    );
+    // Schedule the navigation to happen after the widget tree is built
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const CadastroPage()),
+      );
+    });
   }
 
   @override
