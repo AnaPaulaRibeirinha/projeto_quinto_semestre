@@ -37,7 +37,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text(
+          'Login',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromARGB(255, 102, 0, 0),
       ),
       body: SingleChildScrollView(
@@ -47,6 +50,13 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Center(
+                child: Image.network(
+                  'https://i.imgur.com/gBQhCJ6.png',
+                  height: 100,
+                ),
+              ),
+              const SizedBox(height: 20.0),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -71,14 +81,43 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               const SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: const Text('Login'),
+              SizedBox(
+                height: 40.0,
+                width: 150.0,
+                child: ElevatedButton(
+                  onPressed: _submitForm,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      const Color.fromARGB(255, 102, 0, 0),
+                    ),
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(
+                        vertical: 5.0,
+                        horizontal: 20.0,
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/cadastro');
+                },
+                child: const Text(
+                  'Ainda não tem cadastro? Cadastre-se aqui!',
+                  style: TextStyle(color: Color.fromARGB(255, 102, 0, 0)),
+                ),
               ),
             ],
           ),
         ),
       ),
+      backgroundColor: Colors.white,
     );
   }
 }
