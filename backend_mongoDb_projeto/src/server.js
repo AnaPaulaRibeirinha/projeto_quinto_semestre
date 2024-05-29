@@ -80,11 +80,16 @@ app.post('/login', async (req, res) => {
 
 app.post('/recuperaUsuario', async (req, res) => {
   const { email, senha } = req.body;
-  const usuario = await Usuario.findOne({ email, senha });
+  const usuario = await Usuario.findOne({ email });
   if (usuario) {
-    res.status(200).json(usuario);
+    const isMatch = await bcrypt.compare(senha, usuario.senha);
+    if (isMatch) {
+      res.status(200).json(usuario);
+    } else {
+      res.status(401).json({ error: 'Senha incorreta' });
+    }
   } else {
-    res.status(404).json({ error: 'Usuário não encontrado ou senha incorreta' });
+    res.status(404).json({ error: 'Usuário não encontrado' });
   }
 });
 
@@ -114,6 +119,7 @@ app.get('/produtos', async (req, res) => {
     res.status(500).json({ error: 'Produtos não encontrados' });
   }
 });
+
 
 // Iniciar o servidor
 app.listen(port, () => {

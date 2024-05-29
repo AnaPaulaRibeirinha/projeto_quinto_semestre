@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart'; // Import this package
-import 'package:projeto_quinto_semestre/pages/cadastro.dart';
+import 'package:projeto_quinto_semestre/pages/login.dart'; // Importa a página Login
 
 class Conta extends StatefulWidget {
   const Conta({super.key, required this.userInfo});
@@ -12,28 +11,32 @@ class Conta extends StatefulWidget {
 }
 
 class _ContaState extends State<Conta> {
-
   late Map<String, dynamic> _userInfo;
 
   @override
   void initState() {
     super.initState();
     _userInfo = widget.userInfo;
-    _checkLoginStatus();
+    _checkUserInfo();
   }
 
-  Future<void> _checkLoginStatus() async {
-    // Schedule the navigation to happen after the widget tree is built
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const CadastroPage()),
-      );
-    });
+  void _checkUserInfo() {
+    if (_userInfo.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_userInfo.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Conta'),
