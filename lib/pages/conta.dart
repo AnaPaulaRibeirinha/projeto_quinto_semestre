@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart'; // Import this package
-import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/pages/cadastro.dart';
 
 class Conta extends StatefulWidget {
@@ -13,7 +12,6 @@ class Conta extends StatefulWidget {
 }
 
 class _ContaState extends State<Conta> {
-  final ApiService _apiService = ApiService();
 
   late Map<String, dynamic> _userInfo;
 

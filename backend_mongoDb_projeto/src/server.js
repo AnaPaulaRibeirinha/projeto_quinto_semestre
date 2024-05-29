@@ -40,7 +40,7 @@ const UsuarioSchema = new mongoose.Schema({
   });
   
   const Usuario = mongoose.model('Usuario', UsuarioSchema);
-  
+
   // Rota para adicionar um novo usuário
   app.post('/usuarios', async (req, res) => {
     const { nome, sobrenome, email, genero, senha } = req.body;
@@ -88,6 +88,32 @@ app.post('/recuperaUsuario', async (req, res) => {
   }
 });
 
+// Definindo o modelo de produto
+const ProdutoSchema = new mongoose.Schema({
+  nome: String,
+  descricao: String,
+  preco: Number,
+  imageUrl: String
+}, { collection: 'produto' });
+
+ProdutoSchema.set('toJSON', {
+  transform: (doc, ret, options) => {
+    delete ret.__v;
+    return ret;
+  }
+});
+
+const Produto = mongoose.model('Produto', ProdutoSchema);
+
+// Recupera todos os produtos
+app.get('/produtos', async (req, res) => {
+  try {
+    const products = await Produto.find();
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: 'Produtos não encontrados' });
+  }
+});
 
 // Iniciar o servidor
 app.listen(port, () => {
