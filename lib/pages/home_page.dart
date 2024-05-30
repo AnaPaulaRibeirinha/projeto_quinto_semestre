@@ -4,6 +4,7 @@ import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
+import 'package:projeto_quinto_semestre/pages/paginaProduto.dart';
 
 void main() {
   runApp(const MyApp());
@@ -176,12 +177,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
               IconButton(
                 icon: Icon(Icons.shopping_cart, color: bottomNavBarColor),
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Carrinho(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/carrinho');
                 },
               ),
               IconButton(
@@ -273,64 +269,56 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
               ),
             ),
             products.isEmpty
-                ? Center(
-                    child: Text(
-                      'Sem produtos',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                ? const Center(
+                    child: Text("Sem produtos"),
                   )
-                : SizedBox(), // Se houver produtos, não exiba nada aqui
-            // Se houver produtos, exiba o GridView
-            products.isNotEmpty ?
-            GridView.builder(
-              itemCount: products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-              ),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  margin: const EdgeInsets.all(8),
-                  color: Colors.grey[100],
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Image.network(
-                          products[index]['imageUrl']!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          products[index]['descricao']!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                : GridView.builder(
+                    itemCount: products.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                    ),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaginaProduto(product: products[index]),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(8),
+                          color: Colors.grey[100],
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Image.network(
+                                  products[index]['imageUrl']!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  products[index]['descricao']!,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              
+                            ],
                           ),
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: bottomNavBarColor,
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        child: const Text('Comprar'),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                );
-              },
-            ) : SizedBox(),
           ],
         ),
       ),

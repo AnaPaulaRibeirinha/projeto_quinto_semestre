@@ -1,17 +1,17 @@
-class Produto {
+class ItemCarrinho {
   final String id;
   final String nome;
   final String descricao;
-  final double preco;
   final String imageUrl;
+  final double preco;
+  int quantidade;
 
-  // Construtor
-  Produto({
+  ItemCarrinho({
     required this.id,
     required this.nome,
     required this.descricao,
+    required this.imageUrl,
     required this.preco,
-    required this.imageUrl
+    this.quantidade = 1,
   });
-
 }

@@ -95,6 +95,7 @@ app.post('/recuperaUsuario', async (req, res) => {
 
 // Definindo o modelo de produto
 const ProdutoSchema = new mongoose.Schema({
+  id: String,
   nome: String,
   descricao: String,
   preco: Number,
