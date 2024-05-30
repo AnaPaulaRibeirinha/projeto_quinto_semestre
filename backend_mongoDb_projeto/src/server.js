@@ -98,7 +98,7 @@ const ProdutoSchema = new mongoose.Schema({
   id: String,
   nome: String,
   descricao: String,
-  preco: Number,
+  preco: mongoose.Decimal128,
   imageUrl: String
 }, { collection: 'produto' });
 
@@ -119,6 +119,19 @@ app.get('/produtos', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Produtos não encontrados' });
   }
+});
+
+app.post('/criaProdutos', async (req, res) => {
+  const { nome, preco, descricao, imageUrl } = req.body;
+  const novoProduto = new Produto({ nome, preco, descricao, imageUrl });
+
+  try {
+    const produto = await novoProduto.save();
+    res.status(201).json(produto);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao criar produto' });
+  }
+
 });
 
 

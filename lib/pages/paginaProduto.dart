@@ -10,6 +10,14 @@ class PaginaProduto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double preco = 0.0;
+    if (product['preco'] is Map) {
+      final precoMap = product['preco'] as Map<String, dynamic>;
+      if (precoMap.containsKey(r'$numberDecimal')) {
+        preco = double.tryParse(precoMap[r'$numberDecimal']) ?? 0.0;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(product['nome']),
@@ -39,7 +47,7 @@ class PaginaProduto extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'Preço: R\$${product['preco'].toStringAsFixed(2)}',
+              'Preço: R\$${preco.toStringAsFixed(2)}',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
@@ -53,7 +61,7 @@ class PaginaProduto extends StatelessWidget {
                       nome: product['nome'],
                       descricao: product['descricao'],
                       imageUrl: product['imageUrl'],
-                      preco: product['preco'],
+                      preco: preco,
                     ),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(

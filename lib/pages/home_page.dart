@@ -183,6 +183,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                 icon: Icon(Icons.search, color: bottomNavBarColor),
                 onPressed: () {},
               ),
+              IconButton(
+                icon: Icon(Icons.folder_special_sharp, color: bottomNavBarColor),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/cadastroProduto');
+                },
+              )
             ],
           ),
         ),

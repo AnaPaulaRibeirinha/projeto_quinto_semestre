@@ -57,4 +57,19 @@ class ApiService {
   }
 }
 
+Future<void> criarProduto(Map<String, dynamic> produto) async {
+  final response = await http.post(
+      Uri.parse('$baseUrl/criaProdutos'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(produto),
+    );
+  if (response.statusCode == 201) {
+    print('Produto criado com sucesso');
+  } else {
+    print('Erro ao criar produto: ${response.reasonPhrase}');
+  }
+}
+
 }

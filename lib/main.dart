@@ -8,6 +8,7 @@ import 'package:projeto_quinto_semestre/pages/salvos.dart';
 //import 'package:projeto_quinto_semestre/dbHelper/connection.dart';
 import 'package:projeto_quinto_semestre/provider/carrinhoProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:projeto_quinto_semestre/pages/CadastroProduto.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
           '/salvos': (context) => const Salvos(),
           '/carrinho': (context) => const Carrinho(),
           '/login': (context) => const LoginPage(),
+          '/cadastroProduto': (context) => CadastroProduto()
         },
       ),
     );
