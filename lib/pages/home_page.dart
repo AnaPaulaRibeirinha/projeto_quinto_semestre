@@ -1,24 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:projeto_quinto_semestre/api/api_service.dart';
+import 'package:projeto_quinto_semestre/api/token_storage.dart';
+import 'package:projeto_quinto_semestre/models/token_model.dart';
 import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
-    );
-  }
-}
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -36,12 +24,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
+  late ApiService _apiService;
+  String? _token;
 
   @override
   void initState() {
     super.initState();
     _pageViewController = PageController();
     _tabController = TabController(length: 3, vsync: this);
+    _apiService = ApiService();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    String? token = await TokenStorage.getToken();
+    if (token != null) {
+      Provider.of<TokenModel>(context, listen: false).setToken(token);
+      setState(() {
+        _token = token;
+      });
+    }
   }
 
   @override
@@ -78,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           context,
           MaterialPageRoute(
             builder: (context) => const Conta(
-              userInfo: {}, // You need to provide userInfo data here
+              userInfo: {}, // Você precisa fornecer os dados do userInfo aqui
             ),
           ),
         );
