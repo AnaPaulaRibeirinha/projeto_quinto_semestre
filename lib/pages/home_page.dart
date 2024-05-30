@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
+import 'package:projeto_quinto_semestre/api/api_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,16 +22,31 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
+  
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+  List<dynamic> products = [];
+  
 class _MyHomePageState extends State<MyHomePage> {
   Color appBarColor = Colors.white;
   Color bottomNavBarColor = const Color(0xFF770624);
 
   int _selectedIndex = 0;
+
+  void loadProducts() async {
+    List<dynamic> fetchedProducts = await ApiService().fetchProducts();
+    setState(() {
+      products = fetchedProducts;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadProducts();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -69,28 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> products = [
-      {
-        'image': 'https://i.imgur.com/qAMdoeP.png',
-        'price': 'R\$ 30,00',
-        'description': 'Rímel'
-      },
-      {
-        'image': 'https://i.imgur.com/KoReX3t.png',
-        'price': 'R\$ 50,00',
-        'description': 'Batom'
-      },
-      {
-        'image': 'https://i.imgur.com/huG12VB.png',
-        'price': 'R\$ 100,00',
-        'description': 'Paleta'
-      },
-      {
-        'image': 'https://i.imgur.com/KoReX3t.png',
-        'price': 'R\$ 50',
-        'description': 'Batom'
-      },
-    ];
 
     return Scaffold(
       appBar: PreferredSize(
@@ -205,6 +199,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+            products.isEmpty
+                ? Center(
+                    child: Text(
+                      'Sem produtos',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                : SizedBox(), // Se houver produtos, não exiba nada aqui
+            // Se houver produtos, exiba o GridView
+            products.isNotEmpty ?
             GridView.builder(
               itemCount: products.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -221,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       Expanded(
                         child: Image.network(
-                          products[index]['image']!,
+                          products[index]['imageUrl']!,
                           fit: BoxFit.cover,
                           width: double.infinity,
                         ),
@@ -229,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Text(
-                          products[index]['description']!,
+                          products[index]['descricao']!,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -250,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               },
-            ),
+            ) : SizedBox(),
           ],
         ),
       ),

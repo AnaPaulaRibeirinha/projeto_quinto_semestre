@@ -47,4 +47,14 @@ class ApiService {
       throw Exception('Erro ao obter dados cliente: ${response.statusCode}');
     }
   }
+
+  Future<List<dynamic>> fetchProducts() async {
+  final response = await http.get(Uri.parse('$baseUrl/produtos'));
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    throw Exception('Falha ao carregar produtos');
+  }
+}
+
 }
