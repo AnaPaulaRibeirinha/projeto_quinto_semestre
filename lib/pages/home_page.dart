@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
