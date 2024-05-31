@@ -264,6 +264,18 @@ app.put('/desativaDestaqueProduto/:id', async (req, res) => {
   }
 });
 
+app.get('/produtosPesquisa', async (req, res) => {
+  const { search } = req.query;
+  try {
+    const produtos = await Produto.find({
+      nome: { $regex: search, $options: 'i' },
+      inativo: false // Apenas produtos ativos
+    });
+    res.json(produtos);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
 
 // Iniciar o servidor
 app.listen(port, () => {

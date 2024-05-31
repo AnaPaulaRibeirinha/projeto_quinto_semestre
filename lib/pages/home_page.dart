@@ -4,6 +4,7 @@ import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/pages/paginaProduto.dart';
+import 'package:projeto_quinto_semestre/pages/resultadosProdutos.dart';
 
 void main() {
   runApp(const MyApp());
@@ -181,7 +182,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
               ),
               IconButton(
                 icon: Icon(Icons.search, color: bottomNavBarColor),
-                onPressed: () {},
+                onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ResultadoProdutos()),
+                );
+              },
               ),
               IconButton(
                 icon: Icon(Icons.folder_special_sharp, color: bottomNavBarColor),

@@ -155,5 +155,15 @@ Future<void> atualizarProduto(Map<String, dynamic> produto) async {
     }
   }
 
+  Future<List<dynamic>> searchProducts(String query) async {
+    final response = await http.get(Uri.parse('$baseUrl/produtosPesquisa?search=$query'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as List;
+      return data;
+    } else {
+      throw Exception('Erro ao buscar produtos: ${response.reasonPhrase}');
+    }
+  }
 
 }
