@@ -51,21 +51,41 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>?> getUserInfo(
-      Map<String, dynamic> credentials) async {
-    final String email = credentials['email'];
-    final String senha = credentials['senha'];
-
-    final response = await http.post(
+  Future<Map<String, dynamic>?> getUserInfo(String token) async {
+    final response = await http.get(
       Uri.parse('$baseUrl/recuperaUsuario'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'senha': senha}),
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Erro ao obter dados cliente: ${response.statusCode}');
+      throw Exception('Erro ao obter dados do usuário: ${response.statusCode}');
+    }
+  }
+
+  // Future<Map<String, dynamic>?> getUserToken(String token) async {
+  //   final response = await http.get(
+  //     Uri.parse('$baseUrl/recuperaToken'),
+  //     headers: {'Authorization': 'Bearer $token'},
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     return jsonDecode(response.body);
+  //   } else {
+  //     throw Exception('Erro ao obter dados do usuário: ${response.statusCode}');
+  //   }
+  // }
+
+  Future<void> logout(String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/logout'),
+      body: json.encode({'token': token}),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao efetuar logout');
     }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_quinto_semestre/pages/login.dart'; // Importa a página Login
+import 'package:projeto_quinto_semestre/api/api_service.dart';
+import 'package:projeto_quinto_semestre/api/token_storage.dart';
+import 'package:projeto_quinto_semestre/pages/login.dart';
 
 class Conta extends StatefulWidget {
   const Conta({super.key, required this.userInfo});
@@ -12,6 +14,7 @@ class Conta extends StatefulWidget {
 
 class _ContaState extends State<Conta> {
   late Map<String, dynamic> _userInfo;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -20,22 +23,37 @@ class _ContaState extends State<Conta> {
     _checkUserInfo();
   }
 
-  void _checkUserInfo() {
-    if (_userInfo.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      });
+  Future<void> _checkUserInfo() async {
+    String? token = await TokenStorage.getToken();
+    if (token == null || token.isEmpty) {
+      _redirectToLogin();
+    } else {
+      try {
+        final userInfo = await ApiService().getUserInfo(token);
+        setState(() {
+          _userInfo = userInfo ?? {};
+          _isLoading = false;
+        });
+      } catch (e) {
+        _redirectToLogin();
+      }
     }
+  }
+
+  void _redirectToLogin() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_userInfo.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    // if (_userInfo.isEmpty) {
+    //   return const Center(child: CircularProgressIndicator());
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -94,7 +112,7 @@ class _ContaState extends State<Conta> {
               leading: const Icon(Icons.logout),
               title: const Text('Sair'),
               onTap: () {
-                // Implementar a lógica de logout
+                _logout();
               },
             ),
           ],
@@ -117,6 +135,14 @@ class _ContaState extends State<Conta> {
         ],
         onTap: _onItemTapped,
       ),
+    );
+  }
+
+  void _logout() async {
+    await TokenStorage.setToken('');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 

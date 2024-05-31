@@ -96,37 +96,45 @@ const UsuarioSchema = new mongoose.Schema({
     }
   });
 
-app.post('/recuperaUsuario', async (req, res) => {
-  const { email, senha } = req.body;
-  const usuario = await Usuario.findOne({ email });
-  if (usuario) {
-    const isMatch = await bcrypt.compare(senha, usuario.senha);
-    if (isMatch) {
-      res.status(200).json(usuario);
-    } else {
-      res.status(401).json({ error: 'Senha incorreta' });
-    }
-  } else {
-    res.status(404).json({ error: 'Usuário não encontrado' });
-  }
-});
-
 // Middleware para autenticação de token
-function authenticationToken(req, res, next) {
+function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (token == null) return res.sendStatus(401);
+  if (token == null) return res.sendStatus(401); // Se o token não for fornecido, retorna 401 (Unauthorized)
 
   jwt.verify(token, TOKEN_KEY, (err, user) => {
-    if (err) return res.sendStatus(403);
+    if (err) return res.sendStatus(403); // Se o token for inválido, retorna 403 (Forbidden)
     req.user = user;
     next();
   });
 }
 
+module.exports = authenticateToken;
+
+app.get('/recuperaUsuario', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // ID do usuário extraído do token
+    const usuario = await Usuario.findById(userId);
+
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    res.json(usuario);
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao recuperar informações do usuário', error: err });
+  }
+});
+
+app.post('/logout', (req, res) => {
+  const { token } = req.body;
+  refreshTokens = refreshTokens.filter(t => t !== token);
+  res.status(200).json({ message: 'Logout realizado com sucesso' });
+});
+
 // Rota protegida de exemplo
-app.get('/protected', authenticationToken, (req, res) => {
+app.get('/protected', authenticateToken, (req, res) => {
   res.send("This is a protected route");
 });
 
