@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
   int _selectedIndex = 0;
 
   void loadProducts() async {
-    List<dynamic> fetchedProducts = await ApiService().fetchProducts();
+    List<dynamic> fetchedProducts = await ApiService().fetchActiveDestaqueProducts();
     setState(() {
       products = fetchedProducts;
     });
@@ -186,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
               IconButton(
                 icon: Icon(Icons.folder_special_sharp, color: bottomNavBarColor),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/cadastroProduto');
+                  Navigator.pushNamed(context, '/crud');
                 },
               )
             ],

@@ -72,4 +72,88 @@ Future<void> criarProduto(Map<String, dynamic> produto) async {
   }
 }
 
+Future<void> atualizarProduto(Map<String, dynamic> produto) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/atualizaProduto/${produto['id']}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(produto),
+    );
+    if (response.statusCode == 200) {
+      print('Produto atualizado com sucesso');
+    } else {
+      print('Erro ao atualizar produto: ${response.reasonPhrase}');
+    }
+  }
+
+  Future<void> desativaProduto(String id) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/desativaProduto/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      print('Produto desativado com sucesso');
+    } else {
+      print('Erro ao desativar produto: ${response.reasonPhrase}');
+    }
+  }
+
+  Future<void> ativaProduto(String id) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/ativaProduto/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao ativar produto');
+    }
+  }
+
+  Future<void> ativaDestaqueProduto(String id) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/ativaDestaqueProduto/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao ativar produto');
+    }
+  }
+
+  Future<void> desativaDestaqueProduto(String id) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/desativaDestaqueProduto/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao ativar produto');
+    }
+  }
+
+  Future<List<dynamic>> fetchActiveProducts() async {
+    final response = await http.get(Uri.parse('$baseUrl/produtosAtivos'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Erro ao buscar produtos ativos');
+    }
+  }
+
+  Future<List<dynamic>> fetchActiveDestaqueProducts() async {
+    final response = await http.get(Uri.parse('$baseUrl/produtosAtivosDestaque'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Erro ao buscar produtos ativos');
+    }
+  }
+
+
 }

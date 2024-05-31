@@ -99,7 +99,9 @@ const ProdutoSchema = new mongoose.Schema({
   nome: String,
   descricao: String,
   preco: mongoose.Decimal128,
-  imageUrl: String
+  imageUrl: String,
+  inativo: Boolean,
+  destaque: Boolean
 }, { collection: 'produto' });
 
 ProdutoSchema.set('toJSON', {
@@ -123,7 +125,9 @@ app.get('/produtos', async (req, res) => {
 
 app.post('/criaProdutos', async (req, res) => {
   const { nome, preco, descricao, imageUrl } = req.body;
-  const novoProduto = new Produto({ nome, preco, descricao, imageUrl });
+  const inativo = false;
+  const destaque = false;
+  const novoProduto = new Produto({ nome, preco, descricao, imageUrl, inativo, destaque});
 
   try {
     const produto = await novoProduto.save();
@@ -132,6 +136,132 @@ app.post('/criaProdutos', async (req, res) => {
     res.status(500).json({ error: 'Erro ao criar produto' });
   }
 
+});
+
+app.put('/atualizaProduto/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, preco, descricao, imageUrl } = req.body;
+
+  try {
+    const produtoAtualizado = await Produto.findByIdAndUpdate(
+      id,
+      { nome, preco, descricao, imageUrl },
+      { new: true }
+    );
+
+    if (!produtoAtualizado) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.status(200).json(produtoAtualizado);
+    } catch (error) {
+      console.error('Erro ao atualizar o produto:', error);
+      res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+app.put('/desativaProduto/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const produtoDesativado = await Produto.findByIdAndUpdate(
+      id,
+      { inativo: true },
+      { new: true }
+    );
+
+    if (!produtoDesativado) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.status(200).json(produtoDesativado);
+  } catch (error) {
+    console.error('Erro ao desativar o produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+app.get('/produtosAtivos', async (req, res) => {
+  try {
+    const produtosAtivos = await Produto.find({ inativo: false });
+    res.status(200).json(produtosAtivos);
+  } catch (error) {
+    console.error('Erro ao buscar produtos ativos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+app.get('/produtosAtivosDestaque', async (req, res) => {
+  try {
+    const produtosAtivos = await Produto.find({ inativo: false, destaque: true });
+    res.status(200).json(produtosAtivos);
+  } catch (error) {
+    console.error('Erro ao buscar produtos ativos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+app.put('/ativaProduto/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const produtoDesativado = await Produto.findByIdAndUpdate(
+      id,
+      { inativo: false },
+      { new: true }
+    );
+
+    if (!produtoDesativado) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.status(200).json(produtoDesativado);
+  } catch (error) {
+    console.error('Erro ao ativar o produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+app.put('/ativaDestaqueProduto/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const produtoDesativado = await Produto.findByIdAndUpdate(
+      id,
+      { destaque: true },
+      { new: true }
+    );
+
+    if (!produtoDesativado) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.status(200).json(produtoDesativado);
+  } catch (error) {
+    console.error('Erro ao criar destaque do produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+app.put('/desativaDestaqueProduto/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const produtoDesativado = await Produto.findByIdAndUpdate(
+      id,
+      { destaque: false },
+      { new: true }
+    );
+
+    if (!produtoDesativado) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.status(200).json(produtoDesativado);
+  } catch (error) {
+    console.error('Erro ao tirar destaque do produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 });
 
 
