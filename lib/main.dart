@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           '/carrinho': (context) => const Carrinho(),
           '/login': (context) => const LoginPage(),
           '/cadastroProduto': (context) => CadastroProduto(),
-          '/crud': (context) => ProdutoCRUDPage(), 
+          '/crud': (context) => ProdutoCRUDPage(),  
         },
       ),
     );

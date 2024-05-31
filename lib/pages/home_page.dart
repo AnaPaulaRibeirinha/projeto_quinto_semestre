@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:projeto_quinto_semestre/models/produtos.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
@@ -56,6 +57,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
     _tabController = TabController(length: 3, vsync: this);
   }
 
+  double extractPreco(Map<String, dynamic> precoMap) {
+    if (precoMap.containsKey(r'$numberDecimal')) {
+      return double.tryParse(precoMap[r'$numberDecimal']) ?? 0.0;
+    }
+    return 0.0;
+  }
+
   @override
   void dispose() {
     _pageViewController.dispose();
@@ -73,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const Home(),
+            builder: (context) => const MyHomePage(), 
           ),
         );
         break;
@@ -291,6 +299,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
+                      final double preco = products[index]['preco'] is Map ? extractPreco(products[index]['preco']) : 0.0;
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -316,10 +325,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8),
                                 child: Text(
-                                  products[index]['descricao']!,
+                                  'R\$${preco.toStringAsFixed(2)}',
                                   style: const TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Kanit',
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  products[index]['descricao']!,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: 'Kanit',
                                   ),
                                 ),
                               ),
@@ -336,15 +355,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home, color: Color(0xFF770624)),
             label: 'Início',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.favorite, color: Color(0xFF770624)),
             label: 'Salvos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person, color: Color(0xFF770624)),
             label: 'Conta',
           ),
         ],

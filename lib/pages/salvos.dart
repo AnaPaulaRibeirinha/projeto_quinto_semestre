@@ -1,97 +1,11 @@
+import 'dart:core';
+
 import 'package:flutter/material.dart';
-import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/home_page.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const Home(),
-        '/conta': (context) => const Conta(
-              userInfo: {},
-            ),
-      },
-    );
-  }
-}
-
-class Home extends StatefulWidget {
-  const Home({super.key});
-
-  @override
-  _HomeState createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  int _selectedIndex = 0;
-
-  final MyHomePage _homePage = const MyHomePage();
-  final Salvos _salvosPage = const Salvos();
-  final Conta _contaPage = const Conta(
-    userInfo: {},
-  );
-
-  late Widget _currentPage;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentPage = _homePage;
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      switch (_selectedIndex) {
-        case 0:
-          _currentPage = _homePage;
-          break;
-        case 1:
-          _currentPage = _salvosPage;
-          break;
-        case 2:
-          _currentPage = _contaPage;
-          break;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _currentPage,
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Salvos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Conta',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
+import 'package:projeto_quinto_semestre/pages/conta.dart';
 
 class Salvos extends StatefulWidget {
-  const Salvos({super.key});
+  const Salvos({Key? key}) : super(key: key);
 
   @override
   _SalvosState createState() => _SalvosState();
@@ -103,19 +17,19 @@ class _SalvosState extends State<Salvos> {
   final List<String> imageList = [
     'https://i.imgur.com/qAMdoeP.png',
     'https://i.imgur.com/KoReX3t.png',
-    'https://i.imgur.com/qAMdoeP.png',
+    'https://i.imgur.com/huG12VB.png',
   ];
 
   final List<String> productNames = [
     'Rímel',
     'Batom',
-    'Rímel',
+    'Paleta',
   ];
 
   final List<String> productPrices = [
-    'R\$ 20,00',
+    'R\$ 30,00',
     'R\$ 50,00',
-    'R\$ 25,00',
+    'R\$ 100,00',
   ];
 
   @override
@@ -124,7 +38,8 @@ class _SalvosState extends State<Salvos> {
       appBar: AppBar(
         title: const Text(
           'Salvos',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold), // Definindo o texto "Salvos" em negrito
         ),
         backgroundColor: const Color.fromARGB(255, 133, 1, 1),
       ),
@@ -207,19 +122,20 @@ class _SalvosState extends State<Salvos> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              Center(
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 133, 1, 1),
-                                    textStyle:
-                                        const TextStyle(color: Colors.white),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
+                              ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 133, 1, 1),
+                                  textStyle: const TextStyle(
+                                      color: Colors.white), // Definindo a cor do texto para branco
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                  child: const Text('Comprar'),
+                                ),
+                                child: Text(
+                                  'Comprar',
+                                  style: TextStyle(color: Colors.white), // Definindo a cor do texto para branco
                                 ),
                               ),
                             ],
@@ -233,6 +149,58 @@ class _SalvosState extends State<Salvos> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Color.fromARGB(255, 236, 236, 236),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Color.fromARGB(255, 107, 7, 0)),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite, color: Color.fromARGB(255, 107, 7, 0)),
+            label: 'Salvos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle, color: Color.fromARGB(255, 107, 7, 0)),
+            label: 'Conta',
+          ),
+        ],
+        currentIndex: 1,
+        selectedItemColor: const Color.fromARGB(255, 107, 7, 0),
+        unselectedItemColor: const Color.fromARGB(255, 107, 7, 0),
+        onTap: (index) {
+          setState(() {
+            switch (index) {
+              case 0:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MyHomePage(), 
+                  ),
+                );
+                break;
+              case 1:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Salvos(),
+                  ),
+                );
+                break;
+              case 2:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Conta(
+                      userInfo: {}, // You need to provide userInfo data here
+                    ),
+                  ),
+                );
+                break;
+            }
+          });
+        },
       ),
     );
   }
