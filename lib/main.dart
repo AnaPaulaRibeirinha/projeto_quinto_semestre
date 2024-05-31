@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_quinto_semestre/models/token_model.dart';
 import 'package:projeto_quinto_semestre/pages/cadastro.dart';
 import 'package:projeto_quinto_semestre/pages/carrinho.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/home_page.dart';
 import 'package:projeto_quinto_semestre/pages/login.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
+import 'package:provider/provider.dart';
 //import 'package:projeto_quinto_semestre/dbHelper/connection.dart';
 import 'package:projeto_quinto_semestre/provider/carrinhoProvider.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +16,14 @@ import 'package:projeto_quinto_semestre/pages/produtoCRUD.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //await MongoDB.connect();
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TokenModel()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

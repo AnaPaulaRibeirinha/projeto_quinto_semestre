@@ -6,6 +6,9 @@ import 'package:projeto_quinto_semestre/pages/salvos.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/pages/paginaProduto.dart';
 import 'package:projeto_quinto_semestre/pages/resultadosProdutos.dart';
+import 'package:projeto_quinto_semestre/api/token_storage.dart';
+import 'package:projeto_quinto_semestre/models/token_model.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,6 +51,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
+  late ApiService _apiService;
+  String? _token;
 
   @override
   void initState() {
@@ -55,6 +60,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
     loadProducts();
   _pageViewController = PageController();
     _tabController = TabController(length: 3, vsync: this);
+    _apiService = ApiService();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    String? token = await TokenStorage.getToken();
+    if (token != null) {
+      Provider.of<TokenModel>(context, listen: false).setToken(token);
+      setState(() {
+        _token = token;
+      });
+    }
   }
 
   double extractPreco(Map<String, dynamic> precoMap) {
@@ -98,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
           context,
           MaterialPageRoute(
             builder: (context) => const Conta(
-              userInfo: {}, // You need to provide userInfo data here
+              userInfo: {}, // Você precisa fornecer os dados do userInfo aqui
             ),
           ),
         );

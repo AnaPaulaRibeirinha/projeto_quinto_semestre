@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
+import 'package:projeto_quinto_semestre/api/token_storage.dart';
+import 'package:projeto_quinto_semestre/models/token_model.dart';
 import 'package:projeto_quinto_semestre/pages/home_page.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,14 +25,23 @@ class _LoginPageState extends State<LoginPage> {
         'email': _emailController.text,
         'senha': _senhaController.text,
       };
-      _apiService.login(credentials).then((response) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login realizado com sucesso!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MyHomePage()),
-        );
+
+      _apiService.login(credentials).then((response) async {
+        if (response.containsKey('token')) {
+          String token = response['token']; // Supondo que a resposta contenha um campo 'token'
+          await TokenStorage.setToken(token);
+          Provider.of<TokenModel>(context, listen: false).setToken(token);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login realizado com sucesso!')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MyHomePage()),
+          );
+        } else {
+          throw Exception('Resposta inválida da API');
+        }
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao efetuar login: $error')),
