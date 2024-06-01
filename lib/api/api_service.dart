@@ -288,4 +288,88 @@ class ApiService {
       throw Exception('Falha ao carregar nota do produto');
     }
   }
+
+  Future<Map<String, dynamic>> getProductById(String id) async {
+    final response = await http.get(Uri.parse('$baseUrl/buscaProduto/$id'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Erro ao buscar o produto: ${response.statusCode}');
+    }
+  }
+
+  Future<String> saveProductAsFavorite(String productId, String userId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/salvos'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'userId': userId,
+          'productId': productId,
+        }),
+      );
+      if (response.statusCode == 200) {
+        return 'Produto removido dos salvos.';
+      } else if (response.statusCode == 201) {
+        return 'Produto adicionado aos salvos.';
+      } else {
+        throw Exception('Erro ao salvar o produto como favorito');
+      }
+    } catch (e) {
+      throw Exception('Erro ao salvar o produto como favorito: $e');
+    }
+  }
+
+  Future<bool> checkIfProductIsSaved(String productId, String userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/salvos/$userId/$productId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        return responseData['isSaved'];
+      } else {
+        throw Exception('Erro ao verificar se o produto está salvo');
+      }
+    } catch (e) {
+      throw Exception('Erro ao verificar se o produto está salvo: $e');
+    }
+  }
+
+  Future<List<dynamic>> getSavedProducts(String userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/salvos/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Erro ao obter os produtos salvos');
+      }
+    } catch (e) {
+      throw Exception('Erro ao obter os produtos salvos: $e');
+    }
+  }
+
+  Future<void> updateUsuario(Map<String, dynamic> usuario) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/atualizaUsuario/${usuario['id']}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(usuario),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao atualizar usuário');
+    }
+  }
 }

@@ -390,7 +390,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home, color: Color.fromARGB(255, 107, 7, 0)),
-            label: 'Ínicio',
+            label: 'Início',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite, color: Color.fromARGB(255, 107, 7, 0)),

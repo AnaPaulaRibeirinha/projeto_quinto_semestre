@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/api/token_storage.dart';
+import 'package:projeto_quinto_semestre/pages/editaCadastro.dart';
 import 'package:projeto_quinto_semestre/pages/home_page.dart';
 import 'package:projeto_quinto_semestre/pages/login.dart';
 import 'package:projeto_quinto_semestre/pages/paginaPedidos.dart';
@@ -90,28 +91,7 @@ class _ContaState extends State<Conta> {
                     ),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.settings),
-                    title: const Text('Configurações'),
-                    onTap: () {
-                      // Navegar para a tela de configurações
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.payment),
-                    title: const Text('Formas de pagamento'),
-                    onTap: () {
-                      // Navegar para a tela de formas de pagamento
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.favorite),
-                    title: const Text('Favoritos'),
-                    onTap: () {
-                      // Navegar para a tela de favoritos
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.list),
+                    leading: const Icon(Icons.assignment_turned_in_outlined),
                     title: const Text('Pedidos'),
                     onTap: () {
                       Navigator.push(
@@ -119,6 +99,19 @@ class _ContaState extends State<Conta> {
                         MaterialPageRoute(
                           builder: (context) =>
                               PedidosPage(userId: _userInfo['_id']),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.list),
+                    title: const Text('Editar usuário'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EditarCadastroPage(userId: _userInfo['_id']),
                         ),
                       );
                     },
@@ -138,7 +131,7 @@ class _ContaState extends State<Conta> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home, color: Color.fromARGB(255, 107, 7, 0)),
-            label: 'Ínicio',
+            label: 'Início',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite, color: Color.fromARGB(255, 107, 7, 0)),

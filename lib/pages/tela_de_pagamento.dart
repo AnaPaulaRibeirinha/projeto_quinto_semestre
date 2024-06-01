@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/pages/home_page.dart';
+import 'package:projeto_quinto_semestre/provider/carrinhoProvider.dart';
+import 'package:provider/provider.dart';
 
 class TelaDePagamento extends StatefulWidget {
   final double total;
@@ -27,11 +29,15 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
   final TextEditingController _cvvController = TextEditingController();
 
   void _salvarPedido() async {
+    final productIds = Provider.of<CarrinhoProvider>(context, listen: false)
+        .getProductIds(); // Obtém a lista de IDs dos produtos do carrinho
+
     final pedido = {
       'userId': widget.userInfo['_id'], // ajuste conforme os dados do userInfo
       'total': widget.total,
       'totalItens': widget.totalItens,
       'formaPagamento': metodoPagamento == 'PIX' ? 'PIX' : tipoCartao,
+      'productIds': productIds,
       if (metodoPagamento == 'PIX')
         'codigoPix':
             '00020126360014BR.GOV.BCB.PIX0114+5511999999995204000053039865802BR5913FULANO DE TAL6009SÃO PAULO61080540900062070503***63041D3D',

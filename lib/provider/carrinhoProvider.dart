@@ -5,6 +5,7 @@ class CarrinhoProvider with ChangeNotifier {
   final List<ItemCarrinho> _items = [];
 
   List<ItemCarrinho> get items => _items;
+  final List<String> _productIds = []; 
 
   void addItem(ItemCarrinho item) {
     final index = _items.indexWhere((i) => i.id == item.id);
@@ -12,17 +13,20 @@ class CarrinhoProvider with ChangeNotifier {
       _items[index].quantidade++;
     } else {
       _items.add(item);
+      _productIds.add(item.id);
     }
     notifyListeners();
   }
 
   void removeItem(String id) {
     _items.removeWhere((item) => item.id == id);
+    _productIds.remove(id);
     notifyListeners();
   }
 
   void clearCart() {
     _items.clear();
+    _productIds.clear();
     notifyListeners();
   }
 
@@ -56,5 +60,10 @@ class CarrinhoProvider with ChangeNotifier {
       totalItems += item.quantidade;
     }
     return totalItems;
+  }
+
+  // Adicione o método para obter a lista de IDs dos produtos
+  List<String> getProductIds() {
+    return List<String>.from(_productIds);
   }
 }

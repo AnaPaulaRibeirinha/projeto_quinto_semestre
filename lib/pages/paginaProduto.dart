@@ -24,12 +24,14 @@ class _PaginaProdutoState extends State<PaginaProduto> {
   late Map<String, dynamic> _userInfo;
   List<Map<String, dynamic>> _comments = [];
   double _productRating = 0.0;
+  bool _isFavorite = false;
 
   @override
   void initState() {
     super.initState();
     _apiService = ApiService();
     _loadProductDetails();
+    _checkIfProductIsSaved();
   }
 
   Future<void> _loadProductDetails() async {
@@ -79,7 +81,8 @@ class _PaginaProdutoState extends State<PaginaProduto> {
     if (token == "" || token == null || token.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Você precisa estar logado para comentar.')),
+          content: Text('Você precisa estar logado para comentar.'),
+        ),
       );
       _redirectToLogin();
     } else {
@@ -104,7 +107,9 @@ class _PaginaProdutoState extends State<PaginaProduto> {
     await _apiService.updateProductRating(productId, _rating);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Comentário e nota enviados com sucesso!')),
+      const SnackBar(
+        content: Text('Comentário e nota enviados com sucesso!'),
+      ),
     );
 
     _commentController.clear();
@@ -113,6 +118,71 @@ class _PaginaProdutoState extends State<PaginaProduto> {
     });
 
     await _loadProductDetails(); // Reload comments and rating
+  }
+
+  Future<void> _checkIfProductIsSaved() async {
+    String? token = await TokenStorage.getToken();
+    if (token == "" || token == null || token.isEmpty) {
+      //
+    } else {
+      try {
+        final userInfo = await ApiService().getUserInfo(token);
+        setState(() {
+          _userInfo = userInfo ?? {};
+          _userId = _userInfo['_id'];
+        });
+        bool isSaved = await _apiService.checkIfProductIsSaved(
+            widget.product['_id'], _userId!);
+
+        // Atualize o estado _isFavorite com base no resultado
+        setState(() {
+          _isFavorite = isSaved;
+        });
+      } catch (e) {
+        print('Erro ao verificar se o produto está salvo: $e');
+      }
+    }
+  }
+
+  Future<void> _addToFavorites() async {
+    String? token = await TokenStorage.getToken();
+    if (token == "" || token == null || token.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Você precisa estar logado para adicionar aos favoritos.'),
+        ),
+      );
+      _redirectToLogin();
+    } else {
+      try {
+        String message = await _apiService.saveProductAsFavorite(
+            widget.product['_id'], _userId!);
+
+        if (message.contains('Produto adicionado aos salvos.')) {
+          setState(() {
+            _isFavorite = true;
+          });
+        } else {
+          setState(() {
+            _isFavorite = false;
+          });
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Erro ao adicionar/remover dos favoritos. Tente novamente mais tarde.'),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -128,6 +198,14 @@ class _PaginaProdutoState extends State<PaginaProduto> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.product['nome']),
+        actions: [
+          IconButton(
+            icon: _isFavorite
+                ? const Icon(Icons.favorite)
+                : const Icon(Icons.favorite_border),
+            onPressed: _addToFavorites,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -177,7 +255,8 @@ class _PaginaProdutoState extends State<PaginaProduto> {
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Produto adicionado ao carrinho!')),
+                        content: Text('Produto adicionado ao carrinho!'),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -249,12 +328,12 @@ class _PaginaProdutoState extends State<PaginaProduto> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Feito em: ${formatTimestamp(comment['timestamp'])}',
+                              'Comentado em: ${formatTimestamp(comment['timestamp'])}',
                               style: const TextStyle(
                                   fontSize: 14, color: Colors.grey),
                             ),
                             Text(
-                              'Nota do usuario: ${comment['nota']}',
+                              'Nota do usuário: ${comment['nota']}',
                               style: const TextStyle(
                                   fontSize: 14, color: Colors.grey),
                             ),

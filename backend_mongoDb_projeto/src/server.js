@@ -328,12 +328,31 @@ app.get('/produtosPesquisa', async (req, res) => {
   }
 });
 
+// Rota para buscar um produto pelo ID
+app.get('/buscaProduto/:id', async (req, res) => {
+  const productId = req.params.id;
+  try {
+    const product = await Produto.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+    res.json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Erro ao buscar o produto' });
+  }
+});
+
 const pedidoSchema = new mongoose.Schema({
   userId: String,
   total: Number,
   totalItens: Number,
   formaPagamento: String,
   codigoPix: String,
+  productIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'productIds'
+  }],
   informacoesCartao: {
     numeroCartao: String,
     nomeUsuario: String,
@@ -424,6 +443,90 @@ app.get('/nota/:productId', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to load product rating' });
+  }
+});
+
+const salvosSchema = new mongoose.Schema({
+  productId: String,
+  userId: String,
+});
+
+const Salvos = mongoose.model('Salvos', salvosSchema);
+
+app.post('/salvos', async (req, res) => {
+  const { userId, productId } = req.body;
+
+  try {
+    const existingProduct = await Salvos.findOne({ productId, userId });
+    if (existingProduct) {
+      await Salvos.deleteOne({ productId, userId });
+      return res.status(200).send('Produto removido dos favoritos.');
+    }
+    
+    const savedProduct = new Salvos({ productId, userId });
+    await savedProduct.save();
+    res.status(201).send(savedProduct);
+  } catch (error) {
+    console.error('Erro ao salvar o produto:', error);
+    res.status(500).send('Erro ao salvar o produto');
+  }
+});
+
+app.get('/salvos/:userId/:productId', async (req, res) => {
+  const { userId, productId } = req.params;
+
+  try {
+    const savedProduct = await Salvos.findOne({ productId, userId });
+    if (savedProduct) {
+      res.status(200).send({ isSaved: true });
+    } else {
+      res.status(200).send({ isSaved: false });
+    }
+  } catch (error) {
+    console.error('Erro ao verificar se o produto está salvo:', error);
+    res.status(500).send('Erro ao verificar se o produto está salvo');
+  }
+});
+
+app.get('/salvos/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Buscar todos os registros de produtos salvos pelo usuário
+    const savedRecords = await Salvos.find({ userId });
+
+    // Extrair os IDs dos produtos salvos
+    const productIds = savedRecords.map(record => record.productId);
+
+    // Buscar os detalhes dos produtos utilizando os IDs
+    const savedProducts = await Produto.find({ _id: { $in: productIds } });
+
+    res.status(200).send(savedProducts);
+  } catch (error) {
+    console.error('Erro ao obter os produtos salvos:', error);
+    res.status(500).send('Erro ao obter os produtos salvos');
+  }
+});
+
+app.put('/atualizaUsuario/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, sobrenome, email, genero, senha } = req.body;
+
+  try {
+    const usuario = await Usuario.findByIdAndUpdate(
+      id,
+      { nome, sobrenome, email, genero, senha },
+      { new: true } 
+    );
+
+    if (!usuario) {
+      return res.status(404).send('Usuário não encontrado');
+    }
+
+    res.status(200).send(usuario);
+  } catch (error) {
+    console.error('Erro ao atualizar o usuário:', error);
+    res.status(500).send('Erro ao atualizar o usuário');
   }
 });
 
