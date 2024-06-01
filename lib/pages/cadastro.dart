@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
-import 'package:projeto_quinto_semestre/pages/login.dart'; // Importa a página de login
+import 'package:projeto_quinto_semestre/pages/home_page.dart';
+import 'package:projeto_quinto_semestre/pages/login.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -32,6 +33,10 @@ class _CadastroPageState extends State<CadastroPage> {
       _apiService.addUsuario(usuario).then((response) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Usuário cadastrado com sucesso!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MyHomePage()),
         );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(

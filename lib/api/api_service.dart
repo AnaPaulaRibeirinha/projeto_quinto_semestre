@@ -90,30 +90,30 @@ class ApiService {
   }
 
   Future<List<dynamic>> fetchProducts() async {
-  final response = await http.get(Uri.parse('$baseUrl/produtos'));
-  if (response.statusCode == 200) {
-    return json.decode(response.body);
-  } else {
-    throw Exception('Falha ao carregar produtos');
+    final response = await http.get(Uri.parse('$baseUrl/produtos'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Falha ao carregar produtos');
+    }
   }
-}
 
-Future<void> criarProduto(Map<String, dynamic> produto) async {
-  final response = await http.post(
+  Future<void> criarProduto(Map<String, dynamic> produto) async {
+    final response = await http.post(
       Uri.parse('$baseUrl/criaProdutos'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(produto),
     );
-  if (response.statusCode == 201) {
-    print('Produto criado com sucesso');
-  } else {
-    print('Erro ao criar produto: ${response.reasonPhrase}');
+    if (response.statusCode == 201) {
+      print('Produto criado com sucesso');
+    } else {
+      print('Erro ao criar produto: ${response.reasonPhrase}');
+    }
   }
-}
 
-Future<void> atualizarProduto(Map<String, dynamic> produto) async {
+  Future<void> atualizarProduto(Map<String, dynamic> produto) async {
     final response = await http.put(
       Uri.parse('$baseUrl/atualizaProduto/${produto['id']}'),
       headers: <String, String>{
@@ -188,7 +188,8 @@ Future<void> atualizarProduto(Map<String, dynamic> produto) async {
   }
 
   Future<List<dynamic>> fetchActiveDestaqueProducts() async {
-    final response = await http.get(Uri.parse('$baseUrl/produtosAtivosDestaque'));
+    final response =
+        await http.get(Uri.parse('$baseUrl/produtosAtivosDestaque'));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -197,7 +198,8 @@ Future<void> atualizarProduto(Map<String, dynamic> produto) async {
   }
 
   Future<List<dynamic>> searchProducts(String query) async {
-    final response = await http.get(Uri.parse('$baseUrl/produtosPesquisa?search=$query'));
+    final response =
+        await http.get(Uri.parse('$baseUrl/produtosPesquisa?search=$query'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List;
@@ -222,4 +224,68 @@ Future<void> atualizarProduto(Map<String, dynamic> produto) async {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getPedidos(String userId) async {
+    final url = Uri.parse('$baseUrl/orders/$userId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((item) => item as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load orders');
+    }
+  }
+
+  Future<void> submitComment(
+      String productId, String userId, String comment, int nota) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/comentariosProduto'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'productId': productId,
+        'userId': userId,
+        'comment': comment,
+        'nota': nota,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao enviar comentário');
+    }
+  }
+
+  Future<void> updateProductRating(String productId, int rating) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/notaProduto'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'productId': productId,
+        'rating': rating,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao atualizar nota do produto');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> loadComments(String productId) async {
+    final response =
+        await http.get(Uri.parse('$baseUrl/comentarios/$productId'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(data);
+    } else {
+      throw Exception('Falha ao carregar comentários do produto');
+    }
+  }
+
+  Future<double> loadProductRating(String productId) async {
+    final response = await http.get(Uri.parse('$baseUrl/nota/$productId'));
+    if (response.statusCode == 200) {
+      return double.parse(response.body);
+    } else {
+      throw Exception('Falha ao carregar nota do produto');
+    }
+  }
 }

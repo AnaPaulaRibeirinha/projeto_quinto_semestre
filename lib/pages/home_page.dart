@@ -2,12 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/api/token_storage.dart';
-import 'package:projeto_quinto_semestre/models/token_model.dart';
 import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/paginaProduto.dart';
 import 'package:projeto_quinto_semestre/pages/resultadosProdutos.dart';
 import 'package:projeto_quinto_semestre/pages/salvos.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,6 +51,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   int _currentPageIndex = 0;
   late ApiService _apiService;
   String? _token;
+  bool _isAdmin = false;
+  late Map<String, dynamic> _userInfo;
 
   @override
   void initState() {
@@ -66,11 +66,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   Future<void> _loadToken() async {
     String? token = await TokenStorage.getToken();
-    if (token != null) {
-      Provider.of<TokenModel>(context, listen: false).setToken(token);
-      setState(() {
-        _token = token;
-      });
+    if (token == "" || token == null || token.isEmpty) {
+      //
+    } else {
+      try {
+        final userInfo = await ApiService().getUserInfo(token);
+        setState(() {
+          _userInfo = userInfo ?? {};
+          if (_userInfo['admin']) {
+            _isAdmin = true;
+          }
+        });
+      } catch (e) {
+        //
+      }
     }
   }
 
@@ -214,13 +223,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   );
                 },
               ),
-              IconButton(
-                icon:
-                    Icon(Icons.folder_special_sharp, color: bottomNavBarColor),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/crud');
-                },
-              )
+              if (_isAdmin)
+                IconButton(
+                  icon: Icon(Icons.folder_special_sharp,
+                      color: bottomNavBarColor),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/crud');
+                  },
+                ),
             ],
           ),
         ),

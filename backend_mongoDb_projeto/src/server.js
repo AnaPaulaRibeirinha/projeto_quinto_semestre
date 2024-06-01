@@ -31,7 +31,8 @@ const UsuarioSchema = new mongoose.Schema({
     sobrenome: String,
     email: String,
     genero: String,
-    senha: String
+    senha: String,
+    admin: Boolean
   }, { collection: 'usuario' });
   
   UsuarioSchema.set('toJSON', {
@@ -55,13 +56,15 @@ const UsuarioSchema = new mongoose.Schema({
   // Rota para adicionar um novo usuário
   app.post('/usuarios', async (req, res) => {
     const { nome, sobrenome, email, genero, senha } = req.body;
-  
+    const admin = false;
+
     const novoUsuario = new Usuario({
       nome,
       sobrenome,
       email,
       genero,
-      senha
+      senha,  
+      admin
     });
   
     try {
@@ -351,6 +354,78 @@ app.post('/orders', async (req, res) => {
   }
 });
 
+app.get('/orders/:userId', async (req, res) => {
+  try {
+    const pedidos = await Pedido.find({ userId: req.params.userId });
+    res.status(200).json(pedidos);
+  } catch (error) {
+    res.status(500).send('Erro ao buscar os pedidos');
+  }
+});
+
+const comentarioSchema = new mongoose.Schema({
+  productId: String,
+  userId: String,
+  comment: String,
+  nota: Number,
+  timestamp: { type: Date, default: Date.now },
+});
+
+const notaSchema = new mongoose.Schema({
+  productId: String,
+  mediaProduto: Number,
+});
+
+const Comentario = mongoose.model('Comentario', comentarioSchema);
+const Nota = mongoose.model('Nota', notaSchema);
+
+app.post('/api/comentariosProduto', async (req, res) => {
+  const { productId, userId, comment, nota } = req.body;
+  const novoComentario = new Comentario({ productId, userId, comment, nota });
+  await novoComentario.save();
+  res.sendStatus(200);
+});
+
+app.post('/api/notaProduto', async (req, res) => {
+  const { productId, rating } = req.body;
+  let nota = await Nota.findOne({ productId });
+  if (nota) {
+    nota.mediaProduto = (nota.mediaProduto + rating) / 2;
+    await nota.save();
+  } else {
+    nota = new Nota({ productId, mediaProduto: rating });
+    await nota.save();
+  }
+  res.sendStatus(200);
+});
+
+app.get('/comentarios/:productId', async (req, res) => {
+  const productId = req.params.productId;
+  try {
+    // Aqui você pode chamar a função do banco de dados para carregar os comentários
+    const comments = await Comentario.find({ productId: productId });
+    res.json(comments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to load comments' });
+  }
+});
+
+app.get('/nota/:productId', async (req, res) => {
+  const productId = req.params.productId;
+  try {
+    // Aqui você pode chamar a função do banco de dados para carregar a média das notas
+    const nota = await Nota.findOne({ productId: productId });
+    if (!nota) {
+      res.status(404).json({ message: 'Product rating not found' });
+      return;
+    }
+    res.json(nota.mediaProduto);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to load product rating' });
+  }
+});
 
 // Iniciar o servidor
 app.listen(port, () => {
