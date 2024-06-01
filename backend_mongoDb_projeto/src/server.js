@@ -44,9 +44,11 @@ const UsuarioSchema = new mongoose.Schema({
   const Usuario = mongoose.model('Usuario', UsuarioSchema);
 
   function generateAccessToken(userInfo) {
-    return jwt.sign({ data: userInfo }, TOKEN_KEY, {
-      expiresIn: "1h"
-    });
+    const payload = {
+      id: userInfo._id,
+      email: userInfo.email, // Exemplo de outra informação não sensível
+    };
+    return jwt.sign(payload, TOKEN_KEY, { expiresIn: '1h' });
   }
 
   
@@ -84,7 +86,7 @@ const UsuarioSchema = new mongoose.Schema({
         console.log('Usuário não encontrado ou senha incorreta');
         return res.status(401).json({ message: 'Email ou senha incorretos' });
       }
-  
+      
       console.log('Usuário encontrado, gerando token');
       const token = generateAccessToken(usuario);
       
@@ -101,11 +103,12 @@ function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (token == null) return res.sendStatus(401); // Se o token não for fornecido, retorna 401 (Unauthorized)
+  if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, TOKEN_KEY, (err, user) => {
-    if (err) return res.sendStatus(403); // Se o token for inválido, retorna 403 (Forbidden)
-    req.user = user;
+    if (err) return res.sendStatus(403);
+    req.userId = user.id; // Extrai o ID do usuário e anexa ao objeto req
+    req.email = user.email; // Exemplo de outra informação não sensível
     next();
   });
 }
@@ -114,7 +117,7 @@ module.exports = authenticateToken;
 
 app.get('/recuperaUsuario', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.id; // ID do usuário extraído do token
+    const userId = req.userId; // ID do usuário extraído do token
     const usuario = await Usuario.findById(userId);
 
     if (!usuario) {
