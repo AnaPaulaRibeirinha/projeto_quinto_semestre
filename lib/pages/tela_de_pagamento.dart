@@ -57,6 +57,7 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
           content: Text('Pagamento realizado com sucesso!'),
         ),
       );
+      Provider.of<CarrinhoProvider>(context, listen: false).clearCart();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MyHomePage()),
