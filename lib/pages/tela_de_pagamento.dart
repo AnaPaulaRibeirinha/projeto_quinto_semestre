@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_quinto_semestre/api/api_service.dart';
+import 'package:projeto_quinto_semestre/pages/home_page.dart';
 
 class TelaDePagamento extends StatefulWidget {
   final double total;
   final int totalItens;
+  final Map<String, dynamic> userInfo;
 
-  TelaDePagamento({required this.total, required this.totalItens});
+  const TelaDePagamento(
+      {super.key,
+      required this.total,
+      required this.totalItens,
+      required this.userInfo});
 
   @override
   _TelaDePagamentoState createState() => _TelaDePagamentoState();
@@ -14,12 +21,54 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
   String metodoPagamento = 'PIX';
   String tipoCartao = 'Crédito';
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _numeroCartaoController = TextEditingController();
+  final TextEditingController _nomeUsuarioController = TextEditingController();
+  final TextEditingController _dataValidadeController = TextEditingController();
+  final TextEditingController _cvvController = TextEditingController();
+
+  void _salvarPedido() async {
+    final pedido = {
+      'userId': widget.userInfo['_id'], // ajuste conforme os dados do userInfo
+      'total': widget.total,
+      'totalItens': widget.totalItens,
+      'formaPagamento': metodoPagamento == 'PIX' ? 'PIX' : tipoCartao,
+      if (metodoPagamento == 'PIX')
+        'codigoPix':
+            '00020126360014BR.GOV.BCB.PIX0114+5511999999995204000053039865802BR5913FULANO DE TAL6009SÃO PAULO61080540900062070503***63041D3D',
+      if (metodoPagamento == 'Cartão')
+        'informacoesCartao': {
+          'numeroCartao': _numeroCartaoController.text,
+          'nomeUsuario': _nomeUsuarioController.text,
+          'dataValidade': _dataValidadeController.text,
+          'cvv': _cvvController.text,
+        },
+    };
+
+    try {
+      await ApiService().createOrder(pedido);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pagamento realizado com sucesso!'),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MyHomePage()),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao realizar o pagamento: $error'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Confirmação e Pagamento'),
+        title: const Text('Confirmação e Pagamento'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -28,17 +77,17 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
           children: [
             Text(
               'Total: R\$ ${widget.total.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
             Text(
               'Itens: ${widget.totalItens}',
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 16),
-            Text('Selecione o método de pagamento:',
+            const SizedBox(height: 16),
+            const Text('Selecione o método de pagamento:',
                 style: TextStyle(fontSize: 16)),
             ListTile(
-              title: Text('PIX'),
+              title: const Text('PIX'),
               leading: Radio(
                 value: 'PIX',
                 groupValue: metodoPagamento,
@@ -50,7 +99,7 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
               ),
             ),
             ListTile(
-              title: Text('Cartão'),
+              title: const Text('Cartão'),
               leading: Radio(
                 value: 'Cartão',
                 groupValue: metodoPagamento,
@@ -63,25 +112,17 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
             ),
             if (metodoPagamento == 'PIX') _buildPixForm(),
             if (metodoPagamento == 'Cartão') _buildCartaoForm(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   if (metodoPagamento == 'PIX') {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Pagamento realizado com sucesso!'),
-                      ),
-                    );
+                    _salvarPedido();
                   } else if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Pagamento realizado com sucesso!'),
-                      ),
-                    );
+                    _salvarPedido();
                   }
                 },
-                child: Text('Confirmar Pagamento'),
+                child: const Text('Confirmar Pagamento'),
               ),
             ),
           ],
@@ -94,23 +135,23 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Código PIX:', style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
+        const Text('Código PIX:', style: TextStyle(fontSize: 16)),
+        const SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           color: Colors.grey[200],
-          child: Text(
+          child: const Text(
             '00020126360014BR.GOV.BCB.PIX0114+5511999999995204000053039865802BR5913FULANO DE TAL6009SÃO PAULO61080540900062070503***63041D3D',
             style: TextStyle(fontSize: 16),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Center(
           child: Container(
             width: 200,
             height: 200,
             color: Colors.grey[300],
-            child: Center(child: Text('QR Code')),
+            child: const Center(child: Text('QR Code')),
           ),
         ),
       ],
@@ -123,9 +164,9 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tipo de Cartão:', style: TextStyle(fontSize: 16)),
+          const Text('Tipo de Cartão:', style: TextStyle(fontSize: 16)),
           ListTile(
-            title: Text('Crédito'),
+            title: const Text('Crédito'),
             leading: Radio(
               value: 'Crédito',
               groupValue: tipoCartao,
@@ -137,7 +178,7 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
             ),
           ),
           ListTile(
-            title: Text('Débito'),
+            title: const Text('Débito'),
             leading: Radio(
               value: 'Débito',
               groupValue: tipoCartao,
@@ -148,10 +189,11 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
               },
             ),
           ),
-          SizedBox(height: 16),
-          Text('Número do Cartão:', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('Número do Cartão:', style: TextStyle(fontSize: 16)),
           TextFormField(
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            controller: _numeroCartaoController,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -160,10 +202,11 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
               return null;
             },
           ),
-          SizedBox(height: 16),
-          Text('Nome no Cartão:', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('Nome no Cartão:', style: TextStyle(fontSize: 16)),
           TextFormField(
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            controller: _nomeUsuarioController,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Por favor, insira o nome no cartão';
@@ -171,10 +214,11 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
               return null;
             },
           ),
-          SizedBox(height: 16),
-          Text('Data de Validade:', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('Data de Validade:', style: TextStyle(fontSize: 16)),
           TextFormField(
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            controller: _dataValidadeController,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
             keyboardType: TextInputType.datetime,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -183,10 +227,11 @@ class _TelaDePagamentoState extends State<TelaDePagamento> {
               return null;
             },
           ),
-          SizedBox(height: 16),
-          Text('CVV:', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          const Text('CVV:', style: TextStyle(fontSize: 16)),
           TextFormField(
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            controller: _cvvController,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {

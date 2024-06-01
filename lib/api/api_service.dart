@@ -207,4 +207,19 @@ Future<void> atualizarProduto(Map<String, dynamic> produto) async {
     }
   }
 
+  Future<void> createOrder(Map<String, dynamic> orderData) async {
+    final url = Uri.parse('$baseUrl/orders');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(orderData),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao criar pedido!');
+    }
+  }
+
 }

@@ -325,6 +325,33 @@ app.get('/produtosPesquisa', async (req, res) => {
   }
 });
 
+const pedidoSchema = new mongoose.Schema({
+  userId: String,
+  total: Number,
+  totalItens: Number,
+  formaPagamento: String,
+  codigoPix: String,
+  informacoesCartao: {
+    numeroCartao: String,
+    nomeUsuario: String,
+    dataValidade: String,
+    cvv: String,
+  },
+});
+
+const Pedido = mongoose.model('Pedido', pedidoSchema);
+
+app.post('/orders', async (req, res) => {
+  try {
+    const pedido = new Pedido(req.body);
+    await pedido.save();
+    res.status(200).send('Pedido criado com sucesso');
+  } catch (error) {
+    res.status(500).send('Erro ao criar o pedido');
+  }
+});
+
+
 // Iniciar o servidor
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

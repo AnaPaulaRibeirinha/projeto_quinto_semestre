@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
 import 'package:projeto_quinto_semestre/api/token_storage.dart';
+import 'package:projeto_quinto_semestre/pages/home_page.dart';
 import 'package:projeto_quinto_semestre/pages/login.dart';
+import 'package:projeto_quinto_semestre/pages/salvos.dart';
 
 class Conta extends StatefulWidget {
   const Conta({super.key, required this.userInfo});
@@ -119,21 +121,45 @@ class _ContaState extends State<Conta> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        backgroundColor: const Color.fromARGB(255, 236, 236, 236),
+        items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.home, color: Color.fromARGB(255, 107, 7, 0)),
+            label: 'Ínicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.favorite, color: Color.fromARGB(255, 107, 7, 0)),
             label: 'Salvos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.account_circle,
+                color: Color.fromARGB(255, 107, 7, 0)),
             label: 'Conta',
           ),
         ],
-        onTap: _onItemTapped,
+        currentIndex: 2,
+        selectedItemColor: const Color.fromARGB(255, 107, 7, 0),
+        unselectedItemColor: const Color.fromARGB(255, 107, 7, 0),
+        onTap: (index) {
+          setState(() {
+            switch (index) {
+              case 0:
+                Navigator.pushReplacementNamed(context, '/');
+                break;
+              case 1:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Salvos(),
+                  ),
+                );
+                break;
+              case 2:
+                //
+                break;
+            }
+          });
+        },
       ),
     );
   }
@@ -142,24 +168,7 @@ class _ContaState extends State<Conta> {
     await TokenStorage.setToken('');
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
+      MaterialPageRoute(builder: (context) => const MyHomePage()),
     );
-  }
-
-  void _onItemTapped(int index) {
-    // Navegue para a página correspondente ao item selecionado
-    switch (index) {
-      case 0:
-        // Navegar para a página de "Início"
-        Navigator.pushReplacementNamed(context, '/');
-        break;
-      case 1:
-        // Navegar para a página de "Salvos"
-        Navigator.pushReplacementNamed(context, '/salvos');
-        break;
-      case 2:
-        // Nenhuma ação necessária, já estamos na página de Conta
-        break;
-    }
   }
 }

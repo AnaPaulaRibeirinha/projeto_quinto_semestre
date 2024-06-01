@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const Home(),
+            builder: (context) => const MyHomePage(),
           ),
         );
         break;
@@ -133,6 +133,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
+  }
+
+  double extractPreco(Map<String, dynamic> precoMap) {
+    if (precoMap.containsKey(r'$numberDecimal')) {
+      return double.tryParse(precoMap[r'$numberDecimal']) ?? 0.0;
+    }
+    return 0.0;
   }
 
   bool get _isOnDesktopAndWeb {
@@ -311,6 +318,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
+                      final double preco = products[index]['preco'] is Map
+                          ? extractPreco(products[index]['preco'])
+                          : 0.0;
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -338,10 +348,21 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8),
                                 child: Text(
-                                  products[index]['descricao']!,
+                                  'Preço: R\$${preco.toStringAsFixed(2)}',
                                   style: const TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Kanit',
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Text(
+                                  products[index]['descricao']!,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: 'Kanit',
                                   ),
                                 ),
                               ),
@@ -355,23 +376,52 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        backgroundColor: const Color.fromARGB(255, 236, 236, 236),
+        items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Início',
+            icon: Icon(Icons.home, color: Color.fromARGB(255, 107, 7, 0)),
+            label: 'Ínicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.favorite, color: Color.fromARGB(255, 107, 7, 0)),
             label: 'Salvos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.account_circle,
+                color: Color.fromARGB(255, 107, 7, 0)),
             label: 'Conta',
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: bottomNavBarColor,
-        onTap: _onItemTapped,
+        currentIndex: 0,
+        selectedItemColor: const Color.fromARGB(255, 107, 7, 0),
+        unselectedItemColor: const Color.fromARGB(255, 107, 7, 0),
+        onTap: (index) {
+          setState(() {
+            switch (index) {
+              case 0:
+                //
+                break;
+              case 1:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Salvos(),
+                  ),
+                );
+                break;
+              case 2:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Conta(
+                      userInfo: {}, // Você precisa fornecer os dados do userInfo aqui
+                    ),
+                  ),
+                );
+                break;
+            }
+          });
+        },
       ),
     );
   }
