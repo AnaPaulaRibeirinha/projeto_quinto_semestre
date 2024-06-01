@@ -2,15 +2,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+// JWT
+const jwt = require('jsonwebtoken');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Middlewares
 app.use(bodyParser.json());
 app.use(cors());
 
+const TOKEN_KEY = "RANDOM_KEY";
 
 // Conexão com o MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/tons_de_beleza', {
@@ -41,6 +43,15 @@ const UsuarioSchema = new mongoose.Schema({
   
   const Usuario = mongoose.model('Usuario', UsuarioSchema);
 
+  function generateAccessToken(userInfo) {
+    const payload = {
+      id: userInfo._id,
+      email: userInfo.email, // Exemplo de outra informação não sensível
+    };
+    return jwt.sign(payload, TOKEN_KEY, { expiresIn: '1h' });
+  }
+
+  
   // Rota para adicionar um novo usuário
   app.post('/usuarios', async (req, res) => {
     const { nome, sobrenome, email, genero, senha } = req.body;
@@ -61,36 +72,68 @@ const UsuarioSchema = new mongoose.Schema({
     }
   });
 
-  // Rota para login
-app.post('/login', async (req, res) => {
-  const { email, senha } = req.body;
 
+  app.post('/login', async (req, res) => {
+    const { email, senha } = req.body;
+  
+    console.log('Iniciando processo de login');
+  
+    try {
+      console.log('Procurando usuário no banco de dados');
+      const usuario = await Usuario.findOne({ email, senha });
+  
+      if (!usuario) {
+        console.log('Usuário não encontrado ou senha incorreta');
+        return res.status(401).json({ message: 'Email ou senha incorretos' });
+      }
+      
+      console.log('Usuário encontrado, gerando token');
+      const token = generateAccessToken(usuario);
+      
+      console.log('Token gerado com sucesso');
+      return res.status(200).json({ message: 'Login realizado com sucesso', token });
+    } catch (err) {
+      console.error('Erro ao efetuar login:', err);
+      return res.status(500).json({ message: 'Erro ao efetuar login', error: err.message });
+    }
+  });
+
+// Middleware para autenticação de token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, TOKEN_KEY, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.userId = user.id; // Extrai o ID do usuário e anexa ao objeto req
+    req.email = user.email; // Exemplo de outra informação não sensível
+    next();
+  });
+}
+
+module.exports = authenticateToken;
+
+app.get('/recuperaUsuario', authenticateToken, async (req, res) => {
   try {
-    const usuario = await Usuario.findOne({ email, senha });
+    const userId = req.userId; // ID do usuário extraído do token
+    const usuario = await Usuario.findById(userId);
 
     if (!usuario) {
-      return res.status(401).json({ message: 'Email ou senha incorretos' });
+      return res.status(404).json({ message: 'Usuário não encontrado' });
     }
 
-    res.status(200).json({ message: 'Login realizado com sucesso', usuario });
+    res.json(usuario);
   } catch (err) {
-    res.status(500).json({ message: 'Erro ao efetuar login', error: err });
+    res.status(500).json({ message: 'Erro ao recuperar informações do usuário', error: err });
   }
 });
 
-app.post('/recuperaUsuario', async (req, res) => {
-  const { email, senha } = req.body;
-  const usuario = await Usuario.findOne({ email });
-  if (usuario) {
-    const isMatch = await bcrypt.compare(senha, usuario.senha);
-    if (isMatch) {
-      res.status(200).json(usuario);
-    } else {
-      res.status(401).json({ error: 'Senha incorreta' });
-    }
-  } else {
-    res.status(404).json({ error: 'Usuário não encontrado' });
-  }
+app.post('/logout', (req, res) => {
+  const { token } = req.body;
+  refreshTokens = refreshTokens.filter(t => t !== token);
+  res.status(200).json({ message: 'Logout realizado com sucesso' });
 });
 
 // Definindo o modelo de produto
@@ -109,6 +152,11 @@ ProdutoSchema.set('toJSON', {
     delete ret.__v;
     return ret;
   }
+});
+
+// Rota protegida de exemplo
+app.get('/protected', authenticateToken, (req, res) => {
+  res.send("This is a protected route");
 });
 
 const Produto = mongoose.model('Produto', ProdutoSchema);

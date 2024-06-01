@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:projeto_quinto_semestre/pages/conta.dart';
-import 'package:projeto_quinto_semestre/pages/salvos.dart';
 import 'package:projeto_quinto_semestre/api/api_service.dart';
+import 'package:projeto_quinto_semestre/api/token_storage.dart';
+import 'package:projeto_quinto_semestre/models/token_model.dart';
+import 'package:projeto_quinto_semestre/pages/conta.dart';
 import 'package:projeto_quinto_semestre/pages/paginaProduto.dart';
 import 'package:projeto_quinto_semestre/pages/resultadosProdutos.dart';
+import 'package:projeto_quinto_semestre/pages/salvos.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,21 +27,22 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-  
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-  List<dynamic> products = [];
-  
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
+List<dynamic> products = [];
+
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Color appBarColor = Colors.white;
   Color bottomNavBarColor = const Color(0xFF770624);
 
   int _selectedIndex = 0;
 
   void loadProducts() async {
-    List<dynamic> fetchedProducts = await ApiService().fetchActiveDestaqueProducts();
+    List<dynamic> fetchedProducts =
+        await ApiService().fetchActiveDestaqueProducts();
     setState(() {
       products = fetchedProducts;
     });
@@ -47,13 +51,27 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
+  late ApiService _apiService;
+  String? _token;
 
   @override
   void initState() {
     super.initState();
     loadProducts();
-  _pageViewController = PageController();
+    _pageViewController = PageController();
     _tabController = TabController(length: 3, vsync: this);
+    _apiService = ApiService();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    String? token = await TokenStorage.getToken();
+    if (token != null) {
+      Provider.of<TokenModel>(context, listen: false).setToken(token);
+      setState(() {
+        _token = token;
+      });
+    }
   }
 
   @override
@@ -90,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
           context,
           MaterialPageRoute(
             builder: (context) => const Conta(
-              userInfo: {}, // You need to provide userInfo data here
+              userInfo: {}, // Você precisa fornecer os dados do userInfo aqui
             ),
           ),
         );
@@ -135,7 +153,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-
     final List<String> slideImages = [
       'https://i.imgur.com/nc5dc1N.png',
       'https://i.imgur.com/39rOr9o.png',
@@ -183,14 +200,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
               IconButton(
                 icon: Icon(Icons.search, color: bottomNavBarColor),
                 onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ResultadoProdutos()),
-                );
-              },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ResultadoProdutos()),
+                  );
+                },
               ),
               IconButton(
-                icon: Icon(Icons.folder_special_sharp, color: bottomNavBarColor),
+                icon:
+                    Icon(Icons.folder_special_sharp, color: bottomNavBarColor),
                 onPressed: () {
                   Navigator.pushNamed(context, '/crud');
                 },
@@ -285,7 +304,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                   )
                 : GridView.builder(
                     itemCount: products.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                     ),
                     shrinkWrap: true,
@@ -296,7 +316,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PaginaProduto(product: products[index]),
+                              builder: (context) =>
+                                  PaginaProduto(product: products[index]),
                             ),
                           );
                         },
@@ -314,7 +335,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: Text(
                                   products[index]['descricao']!,
                                   style: const TextStyle(
@@ -323,7 +345,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                                   ),
                                 ),
                               ),
-                              
                             ],
                           ),
                         ),
